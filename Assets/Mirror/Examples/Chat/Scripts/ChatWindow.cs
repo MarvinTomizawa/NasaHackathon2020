@@ -8,12 +8,14 @@ namespace Mirror.Examples.Chat
     {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(ChatWindow));
 
+        private DelayCalculator delayCalculator;
         public InputField chatMessage;
         public Text chatHistory;
         public Scrollbar scrollbar;
 
         public void Awake()
         {
+            delayCalculator = FindObjectOfType<DelayCalculator>();
             Player.OnMessage += OnPlayerMessage;
         }
 
@@ -48,6 +50,10 @@ namespace Mirror.Examples.Chat
 
         IEnumerator AppendAndScroll(string message)
         {
+            var messageSizeDelay = message.Length * 0.05f;
+            var delay = delayCalculator.DelayValue;
+            yield return new WaitForSeconds(messageSizeDelay + delay);
+
             chatHistory.text += message + "\n";
 
             // it takes 2 frames for the UI to update ?!?!
